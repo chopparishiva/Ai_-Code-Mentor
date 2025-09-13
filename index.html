@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeQuest Learning Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+        
+        .fantasy-bg {
+            background: 
+                linear-gradient(rgba(30, 27, 75, 0.7), rgba(49, 46, 129, 0.8), rgba(76, 29, 149, 0.7)),
+                url('https://getwallpapers.com/wallpaper/full/b/6/4/303635.jpg');
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
+        
+        .magic-glow {
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.3), 0 0 40px rgba(168, 85, 247, 0.1);
+        }
+        
+        .code-editor {
+            background: #1a1a2e;
+            border: 2px solid #16213e;
+            font-family: 'Courier New', monospace;
+            position: relative;
+        }
+        
+        .quest-card {
+            background: linear-gradient(145deg, #2d1b69 0%, #1e1b4b 100%);
+            border: 2px solid #4c1d95;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+        }
+        
+        .sparkle {
+            animation: sparkle 2s infinite;
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .floating-castle {
+            position: absolute;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .floating-dragon {
+            position: absolute;
+            animation: fly 15s linear infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes fly {
+            0% { transform: translateX(-100px) scale(0.3); opacity: 0.3; }
+            50% { opacity: 0.6; }
+            100% { transform: translateX(calc(100vw + 100px)) scale(0.3); opacity: 0.3; }
+        }
+        
+        .syntax-highlight {
+            color: #a855f7;
+        }
+        
+        .keyword { color: #3b82f6; }
+        .string { color: #10b981; }
+        .number { color: #f59e0b; }
+        .comment { color: #6b7280; }
+        .error-line { background-color: rgba(239, 68, 68, 0.2); }
+        .warning-line { background-color: rgba(245, 158, 11, 0.2); }
+        
+        .assistant-panel {
+            background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+            border: 2px solid #334155;
+        }
+        
+        .pulse-glow {
+            animation: pulseGlow 2s infinite;
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(59, 130, 246, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.6); }
+        }
+        
+        .tab-active {
+            background: linear-gradient(145deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+        
+        .tab-inactive {
+            background: linear-gradient(145deg, #374151 0%, #1f2937 100%);
+        }
+    </style>
+</head>
+<body class="fantasy-bg min-h-screen text-white font-sans">
+    <!-- Floating Medieval Background Elements -->
+    <div class="floating-elements">
+        <!-- Floating Castle -->
+        <div class="floating-castle" style="top: 10%; right: 15%; opacity: 0.2;">
+            <svg width="120" height="100" viewBox="0 0 120 100" class="text-gray-400">
+                <rect x="20" y="60" width="80" height="30" fill="currentColor"/>
+                <rect x="15" y="50" width="15" height="40" fill="currentColor"/>
+                <rect x="90" y="50" width="15" height="40" fill="currentColor"/>
+                <rect x="35" y="40" width="50" height="50" fill="currentColor"/>
+                <polygon points="35,40 60,20 85,40" fill="currentColor"/>
+                <rect x="55" y="70" width="10" height="20" fill="#4a5568"/>
+                <rect x="25" y="35" width="12" height="20" fill="currentColor"/>
+                <rect x="83" y="35" width="12" height="20" fill="currentColor"/>
+                <polygon points="25,35 31,25 37,35" fill="currentColor"/>
+                <polygon points="83,35 89,25 95,35" fill="currentColor"/>
+                <rect x="45" y="50" width="8" height="8" fill="#fbbf24"/>
+                <rect x="67" y="50" width="8" height="8" fill="#fbbf24"/>
+            </svg>
+        </div>
+        
+        <!-- Flying Dragon -->
+        <div class="floating-dragon" style="top: 20%;">
+            <svg width="80" height="50" viewBox="0 0 80 50" class="text-purple-400">
+                <path d="M10,25 Q20,15 35,20 Q50,25 65,20 Q70,22 75,25" stroke="currentColor" stroke-width="3" fill="none"/>
+                <ellipse cx="15" cy="25" rx="8" ry="5" fill="currentColor"/>
+                <polygon points="5,25 15,20 15,30" fill="currentColor"/>
+                <circle cx="12" cy="23" r="1" fill="#fbbf24"/>
+                <path d="M20,20 Q25,15 30,20 Q25,25 20,20" fill="currentColor" opacity="0.7"/>
+                <path d="M40,18 Q45,13 50,18 Q45,23 40,18" fill="currentColor" opacity="0.7"/>
+            </svg>
+        </div>
+        
+        <!-- Floating Mystical Orbs -->
+        <div class="floating-castle" style="top: 60%; left: 10%; opacity: 0.3; animation-delay: -2s;">
+            <svg width="40" height="40" viewBox="0 0 40 40" class="text-purple-300">
+                <circle cx="20" cy="20" r="15" fill="currentColor" opacity="0.4"/>
+                <circle cx="20" cy="20" r="8" fill="currentColor" opacity="0.6"/>
+                <circle cx="18" cy="18" r="3" fill="#fbbf24" opacity="0.8"/>
+            </svg>
+        </div>
+        
+        <!-- Medieval Banner -->
+        <div class="floating-castle" style="top: 40%; right: 5%; opacity: 0.25; animation-delay: -4s;">
+            <svg width="60" height="80" viewBox="0 0 60 80" class="text-red-600">
+                <rect x="5" y="10" width="3" height="70" fill="#8b4513"/>
+                <path d="M8,10 L50,10 L50,50 L35,40 L20,50 L8,50 Z" fill="currentColor"/>
+                <rect x="15" y="20" width="25" height="3" fill="#fbbf24"/>
+                <rect x="15" y="30" width="25" height="3" fill="#fbbf24"/>
+            </svg>
+        </div>
+    </div>
+    
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-5xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-purple-300" style="font-family: 'Cinzel', serif;">
+                🧙‍♂️ CodeQuest Learning Platform 🧙‍♂️
+            </h1>
+            <p class="text-xl text-purple-200">Master programming with AI-powered guidance and medieval adventures!</p>
+        </header>
+
+        <!-- AI Learning Assistant Panel -->
+        <div class="assistant-panel rounded-lg p-6 mb-6 magic-glow">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center pulse-glow">
+                        <svg viewBox="0 0 24 24" class="w-6 h-6 text-white">
+                            <path fill="currentColor" d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.89 1 3 1.89 3 3V19C3 20.1 3.9 21 5 21H11V19H5V3H13V9H21ZM14 15.5L22.5 7L21 5.5L14 12.5L10.5 9L9 10.5L14 15.5Z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-blue-300">AI Code Mentor</h3>
+                        <p class="text-sm text-gray-300">Your personal programming guide</p>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="toggleAssistant()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm transition-colors">
+                        🤖 Ask AI
+                    </button>
+                    <button onclick="generateExercise()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-sm transition-colors">
+                        ⚡ New Exercise
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Assistant Tabs -->
+            <div class="flex space-x-2 mb-4">
+                <button onclick="switchTab('analysis')" id="analysisTab" class="tab-active px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
+                    📊 Code Analysis
+                </button>
+                <button onclick="switchTab('debug')" id="debugTab" class="tab-inactive px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
+                    🐛 Debug Help
+                </button>
+                <button onclick="switchTab('tutorial')" id="tutorialTab" class="tab-inactive px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
+                    📚 Tutorial
+                </button>
+                <button onclick="switchTab('exercises')" id="exercisesTab" class="tab-inactive px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
+                    🎯 Exercises
+                </button>
+            </div>
+
+            <!-- Tab Content -->
+            <div id="tabContent" class="bg-black bg-opacity-30 rounded-lg p-4 min-h-32">
+                <div id="analysisContent">
+                    <h4 class="text-lg font-semibold text-blue-300 mb-3">📊 Real-time Code Analysis</h4>
+                    <div id="analysisResults" class="space-y-2">
+                        <div class="flex items-center space-x-2 text-green-400">
+                            <span>✅</span>
+                            <span>Syntax: Clean and valid</span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-yellow-400">
+                            <span>⚠️</span>
+                            <span>Style: Consider using more descriptive variable names</span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-blue-400">
+                            <span>💡</span>
+                            <span>Complexity: Beginner level - Great start!</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Player Stats -->
+        <div class="bg-black bg-opacity-30 rounded-lg p-4 mb-6 magic-glow">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center p-2">
+                        <svg viewBox="0 0 100 100" class="w-full h-full text-purple-800">
+                            <circle cx="50" cy="35" r="12" fill="#FDBCB4"/>
+                            <polygon points="38,20 50,5 62,20 58,25 42,25" fill="currentColor"/>
+                            <circle cx="47" cy="32" r="1" fill="black"/>
+                            <circle cx="53" cy="32" r="1" fill="black"/>
+                            <path d="M 45 38 Q 50 40 55 38" stroke="black" stroke-width="1" fill="none"/>
+                            <rect x="45" y="47" width="10" height="25" fill="currentColor"/>
+                            <rect x="40" y="52" width="20" height="15" fill="currentColor"/>
+                            <rect x="42" y="72" width="6" height="10" fill="#8B4513"/>
+                            <rect x="52" y="72" width="6" height="10" fill="#8B4513"/>
+                            <rect x="35" y="55" width="8" height="3" fill="#FDBCB4"/>
+                            <rect x="57" y="55" width="8" height="3" fill="#FDBCB4"/>
+                            <rect x="48" y="60" width="4" height="8" fill="#FFD700"/>
+                            <polygon points="46,8 50,2 54,8" fill="#FFD700"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-lg">Apprentice Coder</h3>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-32 h-2 bg-gray-700 rounded-full">
+                                <div class="progress-bar h-2 rounded-full" style="width: 30%"></div>
+                            </div>
+                            <span class="text-sm text-purple-200">Level 1</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex space-x-4 text-center">
+                    <div>
+                        <div class="text-2xl sparkle">⭐</div>
+                        <div class="text-sm">XP: 150</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl sparkle">🏆</div>
+                        <div class="text-sm">Quests: 2</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Quest -->
+        <div id="questContainer" class="quest-card rounded-lg p-6 mb-6 magic-glow slide-in">
+            <div class="flex items-start space-x-4 mb-4">
+                <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center p-2">
+                    <svg viewBox="0 0 100 100" class="w-full h-full text-yellow-300">
+                        <rect x="20" y="60" width="60" height="30" fill="currentColor"/>
+                        <rect x="15" y="50" width="10" height="40" fill="currentColor"/>
+                        <rect x="75" y="50" width="10" height="40" fill="currentColor"/>
+                        <rect x="35" y="40" width="30" height="50" fill="currentColor"/>
+                        <polygon points="35,40 50,25 65,40" fill="currentColor"/>
+                        <rect x="45" y="70" width="10" height="20" fill="#8B4513"/>
+                        <circle cx="48" cy="75" r="1" fill="#FFD700"/>
+                        <rect x="25" y="35" width="8" height="15" fill="currentColor"/>
+                        <rect x="67" y="35" width="8" height="15" fill="currentColor"/>
+                        <polygon points="25,35 29,25 33,35" fill="currentColor"/>
+                        <polygon points="67,35 71,25 75,35" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h2 class="text-2xl font-bold mb-2" style="font-family: 'Cinzel', serif;">Chapter 1: The Village Variables</h2>
+                    <p class="text-purple-200 mb-4">
+                        Welcome, brave adventurer! You've arrived at the mystical village of Codehaven, where the ancient art of programming magic is taught. 
+                        The village elder needs your help to organize the magical supplies using the power of <strong>variables</strong>!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Story Section -->
+            <div class="bg-black bg-opacity-20 rounded-lg p-4 mb-4">
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0 w-16 h-16">
+                        <svg viewBox="0 0 100 100" class="w-full h-full text-gray-300">
+                            <circle cx="50" cy="40" r="15" fill="#FDBCB4"/>
+                            <rect x="45" y="55" width="10" height="30" fill="#8B4513"/>
+                            <rect x="40" y="60" width="20" height="20" fill="#654321"/>
+                            <rect x="42" y="80" width="6" height="12" fill="#2F1B14"/>
+                            <rect x="52" y="80" width="6" height="12" fill="#2F1B14"/>
+                            <circle cx="46" cy="37" r="1" fill="black"/>
+                            <circle cx="54" cy="37" r="1" fill="black"/>
+                            <path d="M 46 44 Q 50 46 54 44" stroke="black" stroke-width="1" fill="none"/>
+                            <rect x="35" y="62" width="8" height="4" fill="#FDBCB4"/>
+                            <rect x="57" y="62" width="8" height="4" fill="#FDBCB4"/>
+                            <rect x="48" y="65" width="4" height="10" fill="#8B4513"/>
+                            <path d="M 40 50 Q 35 45 30 50 Q 35 55 40 50" fill="white"/>
+                            <path d="M 60 50 Q 65 45 70 50 Q 65 55 60 50" fill="white"/>
+                            <rect x="47" y="25" width="6" height="8" fill="white"/>
+                            <rect x="30" y="70" width="12" height="3" fill="#8B4513"/>
+                        </svg>
+                    </div>
+                    <p class="text-purple-100 leading-relaxed flex-1">
+                        "Young one," says the village elder, stroking his long beard, "our magical inventory is in chaos! 
+                        We have potions, scrolls, and crystals scattered everywhere. In the ancient art of code magic, 
+                        we use <em>variables</em> to store and organize our treasures. Can you help us create variables 
+                        to hold our magical items?"
+                    </p>
+                </div>
+            </div>
+
+            <!-- Challenge -->
+            <div class="mb-4">
+                <h3 class="text-xl font-semibold mb-3 text-yellow-300">🎯 Your Quest:</h3>
+                <p class="text-purple-200 mb-4">
+                    Create variables to store the village's magical inventory. Use the <code class="bg-purple-900 px-2 py-1 rounded">let</code> 
+                    keyword to declare variables for different magical items.
+                </p>
+            </div>
+
+            <!-- Enhanced Code Editor -->
+            <div class="code-editor rounded-lg p-4 mb-4">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center space-x-2">
+                        <svg viewBox="0 0 24 24" class="w-5 h-5 text-yellow-300">
+                            <rect x="3" y="4" width="18" height="16" rx="2" fill="currentColor"/>
+                            <rect x="5" y="6" width="14" height="2" fill="#8B4513"/>
+                            <rect x="5" y="9" width="10" height="1" fill="#8B4513"/>
+                            <rect x="5" y="11" width="12" height="1" fill="#8B4513"/>
+                            <rect x="5" y="13" width="8" height="1" fill="#8B4513"/>
+                            <circle cx="2" cy="8" r="1.5" fill="#D2691E"/>
+                            <circle cx="22" cy="8" r="1.5" fill="#D2691E"/>
+                            <circle cx="2" cy="16" r="1.5" fill="#D2691E"/>
+                            <circle cx="22" cy="16" r="1.5" fill="#D2691E"/>
+                        </svg>
+                        <span class="text-green-400 text-sm">AI-Enhanced Code Editor</span>
+                        <div id="analysisIndicator" class="flex items-center space-x-1">
+                            <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                            <span class="text-xs text-green-400">Live Analysis</span>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="analyzeCode()" class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm transition-colors flex items-center space-x-1">
+                            <span>🔍</span>
+                            <span>Analyze</span>
+                        </button>
+                        <button onclick="runCode()" class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm transition-colors flex items-center space-x-1">
+                            <span>✨</span>
+                            <span>Run Code</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Line Numbers and Code Area -->
+                <div class="flex">
+                    <div id="lineNumbers" class="text-gray-500 text-sm pr-3 select-none">
+                        <div>1</div>
+                        <div>2</div>
+                        <div>3</div>
+                        <div>4</div>
+                        <div>5</div>
+                    </div>
+                    <textarea id="codeInput" class="flex-1 h-40 bg-transparent text-green-300 resize-none outline-none" placeholder="// Write your magical code here...
+// The AI will analyze your code in real-time!
+
+" oninput="updateLineNumbers(); analyzeCodeRealtime()">let potions = 12;
+let scrolls = 8;
+let crystals = 3;
+
+// Try adding more variables or functions!</textarea>
+                </div>
+                
+                <!-- Error/Warning Indicators -->
+                <div id="codeIssues" class="mt-2 space-y-1"></div>
+            </div>
+
+            <!-- Output -->
+            <div id="output" class="bg-gray-900 rounded-lg p-4 mb-4 min-h-16">
+                <div class="text-gray-400 text-sm mb-2">🔮 Magical Results:</div>
+                <div id="outputContent" class="text-green-300 font-mono"></div>
+            </div>
+
+            <!-- Hint System -->
+            <div id="hintSection" class="bg-blue-900 bg-opacity-30 rounded-lg p-4 mb-4" style="display: none;">
+                <div class="flex items-center space-x-2 mb-2">
+                    <span class="text-2xl">💡</span>
+                    <span class="font-semibold text-blue-300">Magical Hint:</span>
+                </div>
+                <p id="hintText" class="text-blue-200"></p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex space-x-4">
+                <button onclick="showHint()" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg transition-colors font-semibold">
+                    💡 Need a Hint?
+                </button>
+                <button onclick="checkSolution()" class="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg transition-colors font-semibold">
+                    ⚔️ Submit Quest
+                </button>
+                <button onclick="nextChapter()" id="nextBtn" class="bg-yellow-600 hover:bg-yellow-700 px-6 py-2 rounded-lg transition-colors font-semibold" style="display: none;">
+                    🚀 Next Adventure
+                </button>
+            </div>
+        </div>
+
+        <!-- Achievement Popup -->
+        <div id="achievementPopup" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display: none;">
+            <div class="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg p-6 text-center text-black max-w-md mx-4">
+                <div class="text-6xl mb-4">🏆</div>
+                <h3 class="text-2xl font-bold mb-2">Quest Complete!</h3>
+                <p class="mb-4">You've mastered the art of variables! The village elder is impressed with your magical coding skills.</p>
+                <div class="text-lg font-semibold mb-4">+50 XP Earned!</div>
+                <button onclick="closeAchievement()" class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition-colors">
+                    Continue Adventure
+                </button>
+            </div>
+        </div>
+
+        <!-- Progress Tracker -->
+        <div class="bg-black bg-opacity-30 rounded-lg p-4">
+            <h3 class="text-lg font-semibold mb-3">📚 Learning Journey</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-green-600 bg-opacity-30 rounded-lg p-3 border-2 border-green-500">
+                    <div class="flex items-center space-x-2 mb-2">
+                        <span class="text-2xl">✅</span>
+                        <span class="font-semibold">Variables</span>
+                    </div>
+                    <p class="text-sm text-green-200">Store magical items in containers</p>
+                </div>
+                <div class="bg-gray-600 bg-opacity-30 rounded-lg p-3 border-2 border-gray-500">
+                    <div class="flex items-center space-x-2 mb-2">
+                        <span class="text-2xl">🔒</span>
+                        <span class="font-semibold">Functions</span>
+                    </div>
+                    <p class="text-sm text-gray-300">Cast reusable spells</p>
+                </div>
+                <div class="bg-gray-600 bg-opacity-30 rounded-lg p-3 border-2 border-gray-500">
+                    <div class="flex items-center space-x-2 mb-2">
+                        <span class="text-2xl">🔒</span>
+                        <span class="font-semibold">Loops</span>
+                    </div>
+                    <p class="text-sm text-gray-300">Repeat magical actions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentChapter = 1;
+        let playerXP = 150;
+        let questsCompleted = 2;
+        let currentTab = 'analysis';
+        let analysisTimer = null;
+
+        const chapters = {
+            1: {
+                title: "Chapter 1: The Village Variables",
+                story: "Welcome, brave adventurer! You've arrived at the mystical village of Codehaven...",
+                challenge: "Create variables to store the village's magical inventory.",
+                solution: ["let", "potions", "scrolls", "crystals"],
+                hint: "Use 'let variableName = value;' to create a variable. Try creating variables for potions, scrolls, and crystals!"
+            },
+            2: {
+                title: "Chapter 2: The Function Forest",
+                story: "Deep in the enchanted forest, you discover ancient runes that teach the magic of functions...",
+                challenge: "Create a function that calculates the total magical power of your items.",
+                solution: ["function", "return", "total"],
+                hint: "Functions are like magical spells you can cast repeatedly. Use 'function spellName() { }' to create one!"
+            }
+        };
+
+        const exercises = [
+            {
+                title: "Variable Declaration Challenge",
+                description: "Create variables for a magical shop inventory",
+                starter: "// Create variables for:\n// - wands (15 items)\n// - spellbooks (8 items)\n// - potions (23 items)",
+                solution: ["let wands = 15", "let spellbooks = 8", "let potions = 23"]
+            },
+            {
+                title: "Function Creation Quest",
+                description: "Write a function to calculate total magical power",
+                starter: "// Create a function called 'calculatePower'\n// that adds three numbers together",
+                solution: ["function calculatePower", "return", "+"]
+            },
+            {
+                title: "Loop Adventure",
+                description: "Use a loop to count magical items",
+                starter: "// Use a for loop to count from 1 to 10",
+                solution: ["for", "i++", "console.log"]
+            }
+        ];
+
+        // AI Assistant Functions
+        function switchTab(tabName) {
+            currentTab = tabName;
+            
+            // Update tab appearance
+            document.querySelectorAll('[id$="Tab"]').forEach(tab => {
+                tab.className = tab.className.replace('tab-active', 'tab-inactive');
+            });
+            document.getElementById(tabName + 'Tab').className = 
+                document.getElementById(tabName + 'Tab').className.replace('tab-inactive', 'tab-active');
+            
+            // Update content
+            const content = document.getElementById('tabContent');
+            switch(tabName) {
+                case 'analysis':
+                    content.innerHTML = `
+                        <div id="analysisContent">
+                            <h4 class="text-lg font-semibold text-blue-300 mb-3">📊 Real-time Code Analysis</h4>
+                            <div id="analysisResults" class="space-y-2">
+                                <div class="flex items-center space-x-2 text-green-400">
+                                    <span>✅</span>
+                                    <span>Syntax: Clean and valid</span>
+                                </div>
+                                <div class="flex items-center space-x-2 text-yellow-400">
+                                    <span>⚠️</span>
+                                    <span>Style: Consider using more descriptive variable names</span>
+                                </div>
+                                <div class="flex items-center space-x-2 text-blue-400">
+                                    <span>💡</span>
+                                    <span>Complexity: Beginner level - Great start!</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'debug':
+                    content.innerHTML = `
+                        <div>
+                            <h4 class="text-lg font-semibold text-red-300 mb-3">🐛 Debug Assistant</h4>
+                            <div class="space-y-3">
+                                <div class="bg-red-900 bg-opacity-30 p-3 rounded-lg">
+                                    <div class="font-semibold text-red-300">Common Issues:</div>
+                                    <ul class="mt-2 space-y-1 text-sm">
+                                        <li>• Missing semicolons at end of statements</li>
+                                        <li>• Undefined variables (check spelling)</li>
+                                        <li>• Mismatched parentheses or brackets</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-green-900 bg-opacity-30 p-3 rounded-lg">
+                                    <div class="font-semibold text-green-300">Quick Fixes:</div>
+                                    <ul class="mt-2 space-y-1 text-sm">
+                                        <li>• Use console.log() to check variable values</li>
+                                        <li>• Declare variables with 'let' before using them</li>
+                                        <li>• Check browser console for error messages</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'tutorial':
+                    content.innerHTML = `
+                        <div>
+                            <h4 class="text-lg font-semibold text-purple-300 mb-3">📚 Interactive Tutorial</h4>
+                            <div class="space-y-4">
+                                <div class="bg-purple-900 bg-opacity-30 p-4 rounded-lg">
+                                    <h5 class="font-semibold text-purple-300 mb-2">Variables in JavaScript</h5>
+                                    <p class="text-sm mb-2">Variables are containers that store data values. Think of them as magical boxes!</p>
+                                    <div class="bg-black bg-opacity-50 p-2 rounded font-mono text-sm">
+                                        <span class="text-blue-400">let</span> <span class="text-green-400">magicPower</span> = <span class="text-yellow-400">100</span>;
+                                    </div>
+                                </div>
+                                <div class="bg-blue-900 bg-opacity-30 p-4 rounded-lg">
+                                    <h5 class="font-semibold text-blue-300 mb-2">Functions</h5>
+                                    <p class="text-sm mb-2">Functions are reusable blocks of code - like magical spells you can cast repeatedly!</p>
+                                    <div class="bg-black bg-opacity-50 p-2 rounded font-mono text-sm">
+                                        <span class="text-blue-400">function</span> <span class="text-green-400">castSpell</span>() {<br>
+                                        &nbsp;&nbsp;<span class="text-blue-400">return</span> <span class="text-yellow-400">"✨ Magic!"</span>;<br>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'exercises':
+                    const exerciseHtml = exercises.map((ex, i) => `
+                        <div class="bg-gray-800 bg-opacity-50 p-3 rounded-lg mb-3">
+                            <h5 class="font-semibold text-yellow-300">${ex.title}</h5>
+                            <p class="text-sm text-gray-300 mb-2">${ex.description}</p>
+                            <button onclick="loadExercise(${i})" class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm">
+                                Load Exercise
+                            </button>
+                        </div>
+                    `).join('');
+                    
+                    content.innerHTML = `
+                        <div>
+                            <h4 class="text-lg font-semibold text-yellow-300 mb-3">🎯 Practice Exercises</h4>
+                            ${exerciseHtml}
+                        </div>
+                    `;
+                    break;
+            }
+        }
+
+        function analyzeCode() {
+            const code = document.getElementById('codeInput').value;
+            const issues = document.getElementById('codeIssues');
+            const analysisResults = document.getElementById('analysisResults');
+            
+            if (!analysisResults) return;
+            
+            let analysis = [];
+            let issuesFound = [];
+            
+            // Basic syntax analysis
+            const lines = code.split('\n');
+            let hasVariables = false;
+            let hasFunctions = false;
+            let syntaxErrors = [];
+            
+            lines.forEach((line, index) => {
+                const trimmed = line.trim();
+                if (trimmed.includes('let ') || trimmed.includes('const ') || trimmed.includes('var ')) {
+                    hasVariables = true;
+                }
+                if (trimmed.includes('function ')) {
+                    hasFunctions = true;
+                }
+                
+                // Check for common syntax issues
+                if (trimmed && !trimmed.startsWith('//')) {
+                    if (trimmed.includes('=') && !trimmed.endsWith(';') && !trimmed.endsWith('{') && !trimmed.endsWith('}')) {
+                        syntaxErrors.push(`Line ${index + 1}: Consider adding semicolon`);
+                    }
+                }
+            });
+            
+            // Generate analysis
+            if (syntaxErrors.length === 0) {
+                analysis.push('<div class="flex items-center space-x-2 text-green-400"><span>✅</span><span>Syntax: Clean and valid</span></div>');
+            } else {
+                analysis.push('<div class="flex items-center space-x-2 text-red-400"><span>❌</span><span>Syntax: Issues detected</span></div>');
+                issuesFound = issuesFound.concat(syntaxErrors);
+            }
+            
+            if (hasVariables) {
+                analysis.push('<div class="flex items-center space-x-2 text-green-400"><span>✅</span><span>Variables: Properly declared</span></div>');
+            } else {
+                analysis.push('<div class="flex items-center space-x-2 text-yellow-400"><span>⚠️</span><span>Variables: None detected</span></div>');
+            }
+            
+            if (hasFunctions) {
+                analysis.push('<div class="flex items-center space-x-2 text-green-400"><span>✅</span><span>Functions: Good structure</span></div>');
+            }
+            
+            // Code complexity
+            const complexity = code.length < 100 ? 'Beginner' : code.length < 300 ? 'Intermediate' : 'Advanced';
+            analysis.push(`<div class="flex items-center space-x-2 text-blue-400"><span>💡</span><span>Complexity: ${complexity} level</span></div>`);
+            
+            analysisResults.innerHTML = analysis.join('');
+            
+            // Show issues
+            if (issuesFound.length > 0) {
+                issues.innerHTML = issuesFound.map(issue => 
+                    `<div class="text-yellow-400 text-sm">⚠️ ${issue}</div>`
+                ).join('');
+            } else {
+                issues.innerHTML = '';
+            }
+        }
+
+        function analyzeCodeRealtime() {
+            clearTimeout(analysisTimer);
+            analysisTimer = setTimeout(() => {
+                if (currentTab === 'analysis') {
+                    analyzeCode();
+                }
+            }, 1000);
+        }
+
+        function updateLineNumbers() {
+            const code = document.getElementById('codeInput').value;
+            const lines = code.split('\n').length;
+            const lineNumbers = document.getElementById('lineNumbers');
+            
+            let numbersHtml = '';
+            for (let i = 1; i <= Math.max(lines, 5); i++) {
+                numbersHtml += `<div>${i}</div>`;
+            }
+            lineNumbers.innerHTML = numbersHtml;
+        }
+
+        function loadExercise(index) {
+            const exercise = exercises[index];
+            document.getElementById('codeInput').value = exercise.starter;
+            updateLineNumbers();
+            
+            // Show exercise info
+            alert(`🎯 ${exercise.title}\n\n${exercise.description}\n\nThe starter code has been loaded in the editor!`);
+        }
+
+        function generateExercise() {
+            const randomExercise = exercises[Math.floor(Math.random() * exercises.length)];
+            loadExercise(exercises.indexOf(randomExercise));
+        }
+
+        function toggleAssistant() {
+            const assistantPanel = document.querySelector('.assistant-panel');
+            assistantPanel.scrollIntoView({ behavior: 'smooth' });
+            
+            // Simulate AI response
+            setTimeout(() => {
+                alert('🤖 AI Assistant: "I\'m analyzing your code! Check the different tabs above for detailed insights, debugging help, tutorials, and practice exercises. What would you like to learn more about?"');
+            }, 500);
+        }
+
+        function runCode() {
+            const code = document.getElementById('codeInput').value;
+            const output = document.getElementById('outputContent');
+            
+            try {
+                // Create a safe evaluation environment
+                let result = '';
+                const lines = code.split('\n');
+                
+                lines.forEach(line => {
+                    line = line.trim();
+                    if (line && !line.startsWith('//')) {
+                        if (line.includes('let ') || line.includes('const ') || line.includes('var ')) {
+                            const match = line.match(/(let|const|var)\s+(\w+)\s*=\s*(.+);?/);
+                            if (match) {
+                                const [, keyword, varName, value] = match;
+                                result += `✨ Created magical container "${varName}" with value ${value}\n`;
+                            }
+                        }
+                        if (line.includes('function ')) {
+                            const match = line.match(/function\s+(\w+)/);
+                            if (match) {
+                                result += `🔮 Crafted magical spell "${match[1]}"\n`;
+                            }
+                        }
+                    }
+                });
+                
+                if (result) {
+                    output.innerHTML = result.replace(/\n/g, '<br>');
+                } else {
+                    output.innerHTML = '🔮 Cast your spell by writing some code above!';
+                }
+                
+                // Trigger analysis after running code
+                analyzeCode();
+            } catch (error) {
+                output.innerHTML = `❌ Spell failed: ${error.message}`;
+            }
+        }
+
+        function showHint() {
+            const hintSection = document.getElementById('hintSection');
+            const hintText = document.getElementById('hintText');
+            
+            hintText.textContent = chapters[currentChapter].hint;
+            hintSection.style.display = 'block';
+            hintSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function checkSolution() {
+            const code = document.getElementById('codeInput').value.toLowerCase();
+            const solution = chapters[currentChapter].solution;
+            
+            let correctCount = 0;
+            solution.forEach(keyword => {
+                if (code.includes(keyword.toLowerCase())) {
+                    correctCount++;
+                }
+            });
+            
+            if (correctCount >= solution.length - 1) {
+                showAchievement();
+                document.getElementById('nextBtn').style.display = 'inline-block';
+            } else {
+                alert('🧙‍♂️ "Not quite right, young apprentice. Try the AI Assistant for help or check the Debug tab!"');
+            }
+        }
+
+        function showAchievement() {
+            document.getElementById('achievementPopup').style.display = 'flex';
+            playerXP += 50;
+            questsCompleted++;
+            updatePlayerStats();
+        }
+
+        function closeAchievement() {
+            document.getElementById('achievementPopup').style.display = 'none';
+        }
+
+        function updatePlayerStats() {
+            // Update progress bar
+            const progressBar = document.querySelector('.progress-bar');
+            const newWidth = Math.min((playerXP / 500) * 100, 100);
+            progressBar.style.width = newWidth + '%';
+        }
+
+        function nextChapter() {
+            if (currentChapter < Object.keys(chapters).length) {
+                currentChapter++;
+                loadChapter(currentChapter);
+            } else {
+                alert('🎉 Congratulations! You\'ve completed all available chapters. Try the AI Assistant for more challenges!');
+            }
+        }
+
+        function loadChapter(chapterNum) {
+            const chapter = chapters[chapterNum];
+            if (!chapter) return;
+            
+            // Update chapter content
+            document.querySelector('h2').textContent = chapter.title;
+            document.querySelector('.text-purple-200').textContent = chapter.challenge;
+            
+            // Reset UI
+            document.getElementById('codeInput').value = '';
+            document.getElementById('outputContent').innerHTML = '🔮 Ready for your next magical challenge!';
+            document.getElementById('hintSection').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'none';
+            
+            updateLineNumbers();
+            
+            // Add slide-in animation
+            const questContainer = document.getElementById('questContainer');
+            questContainer.classList.remove('slide-in');
+            setTimeout(() => questContainer.classList.add('slide-in'), 10);
+        }
+
+        // Initialize the platform
+        document.addEventListener('DOMContentLoaded', function() {
+            updateLineNumbers();
+            runCode();
+            analyzeCode();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97e5900f954e9f49',t:'MTc1Nzc0NDY3OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+
